@@ -5,33 +5,26 @@ import fs from "fs/promises";
 import log from "loglevel";
 import { program } from "commander";
 import { stringify } from "csv-stringify/sync";
-import {
-    NetrunnerDataSource,
-    NetrunnerDataSourceOptions,
-    SnapshotEntity,
-} from "@eric03742/netrunner-entities";
+import { NetrunnerDataSource, SnapshotEntity } from "@eric03742/netrunner-entities";
 
-interface AppOptions extends NetrunnerDataSourceOptions {
+interface AppOptions  {
+    database: string;
     output: string;
 }
 
 program
     .version("0.3.0", "-v, --version", "显示程序版本")
-    .requiredOption("--host <host>", "数据库地址")
-    .requiredOption("--port <port>", "端口", parseInt)
-    .requiredOption("--username <username>", "用户名")
-    .requiredOption("--password <password>", "密码")
-    .requiredOption("--database <database>", "数据库名")
-    .requiredOption("--output <output>", "导出目录")
-;
+    .requiredOption("-d, --database <database>", "数据库路径")
+    .requiredOption("-o, --output <output>", "输出文件路径")
+    ;
 program.parse();
 const options = program.opts<AppOptions>();
-const AppDataSource = new NetrunnerDataSource(options);
+const AppDataSource = NetrunnerDataSource.create(options.database);
 
 async function initialize(): Promise<void> {
     log.setLevel(log.levels.INFO);
     await AppDataSource.initialize();
-    log.info(`MySQL server '${options.host}:${options.port}', database '${options.database}' connected!`);
+    log.info(`SQLite database '${options.database}' connected!`);
 }
 
 async function terminate(): Promise<void> {
