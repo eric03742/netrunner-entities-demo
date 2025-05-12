@@ -6,7 +6,7 @@
 
 `netrunner-entities-demo` 是一个用于简单演示 [netrunner-entities](https://github.com/eric03742/netrunner-entities) 使用方法的项目。
 
-本项目演示将当前（2025.04，《仰望》扩展包发布后）标准环境的全部卡牌以表格形式导出。
+本项目演示将当前（2025.04，《仰望》扩展包发布后）标准环境的全部卡牌以csv表格形式导出。
 
 本项目运行需要 [netrunner-database](https://github.com/eric03742/netrunner-database) 生成的中文卡牌数据库数据。
 
@@ -22,27 +22,16 @@ npm run build:release
 ## 运行说明
 
 ```shell
-npm run start -- \
-    --host={HOST} \
-    --port={PORT} \
-    --username={USERNAME} \
-    --password={PASSWORD} \
-    --database={DATABASE} \
-    --output={OUTPUT_FILE}
+npm run start
 ```
-
-**参数说明**
-
-* `--host`：数据库地址
-* `--port`：端口
-* `--username`：用户名
-* `--password`：密码
-* `--database`：数据库名
-* `--output`：导出文件路径
 
 ## 数据源
 
-卡图文件均来自 [NetrunnerDB](https://netrunnerdb.com/) 的公开数据，本仓库只作收集、整理之用，对这些卡图均无版权。
+你可以在项目目录中的 `result` 文件夹下查看最新版本的标准环境卡牌数据。
+
+本项目使用 [netrunner-database](https://github.com/eric03742/netrunner-database) 生成的 SQLite 数据库文件作为数据来源。
+
+卡牌数据来自 [NetrunnerDB](https://netrunnerdb.com/) 及其 GitHub 仓库 [netrunner-card-json](https://github.com/NetrunnerDB/netrunner-cards-json)，中文文本数据来自 [netrunner-card-text-Chinese](https://github.com/eric03742/netrunner-card-text-Chinese)。
 
 本仓库及其开发者与 Fantasy Flight Games、Wizards of the Coast、Null Signal Games、NetrunnerDB 均无关联。
 

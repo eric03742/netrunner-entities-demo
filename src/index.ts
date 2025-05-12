@@ -1,30 +1,40 @@
-#!/usr/bin/env node
-
 import "reflect-metadata";
 import fs from "fs/promises";
 import log from "loglevel";
-import { program } from "commander";
+import path from "path";
 import { stringify } from "csv-stringify/sync";
-import { NetrunnerDataSource, SnapshotEntity } from "@eric03742/netrunner-entities";
+import { DataSource } from "typeorm";
+import {
+    SideEntity, FactionEntity, TypeEntity, SubtypeEntity,
+    SettypeEntity, CycleEntity, SetEntity,
+    FormatEntity, PoolEntity, RestrictionEntity, SnapshotEntity,
+    CardEntity, PrintingEntity, RulingEntity,
+} from "netrunner-entities";
 
-interface AppOptions  {
-    database: string;
-    output: string;
-}
 
-program
-    .version("0.3.0", "-v, --version", "显示程序版本")
-    .requiredOption("-d, --database <database>", "数据库路径")
-    .requiredOption("-o, --output <output>", "输出文件路径")
-    ;
-program.parse();
-const options = program.opts<AppOptions>();
-const AppDataSource = NetrunnerDataSource.create(options.database);
+const OUTPUT_FILENAME = path.join("result", "standard_cards.csv");
+const DATABASE_FILENAME = path.join("database", "netrunner.sqlite");
+const AppDataSource = new DataSource({
+    database: DATABASE_FILENAME,
+    type: "better-sqlite3",
+    logging: [
+        "error", "warn", "info", "log",
+    ],
+    entities: [
+        SideEntity, FactionEntity, TypeEntity, SubtypeEntity,
+        SettypeEntity, CycleEntity, SetEntity,
+        FormatEntity, PoolEntity, RestrictionEntity, SnapshotEntity,
+        CardEntity, PrintingEntity, RulingEntity
+    ],
+    prepareDatabase: db => {
+        db.pragma('journal_mode = WAL');
+    },
+});
 
 async function initialize(): Promise<void> {
     log.setLevel(log.levels.INFO);
     await AppDataSource.initialize();
-    log.info(`SQLite database '${options.database}' connected!`);
+    log.info(`SQLite database '${DATABASE_FILENAME}' connected!`);
 }
 
 async function terminate(): Promise<void> {
@@ -112,8 +122,9 @@ async function extract(): Promise<void> {
         }
     }
 
-    await fs.writeFile(options.output, stringify(collector), "utf8");
-    log.info(`Table '${options.output}' created!`);
+
+    await fs.writeFile(OUTPUT_FILENAME, stringify(collector), "utf8");
+    log.info(`Table '${OUTPUT_FILENAME}' created!`);
 }
 
 async function main(): Promise<void> {
